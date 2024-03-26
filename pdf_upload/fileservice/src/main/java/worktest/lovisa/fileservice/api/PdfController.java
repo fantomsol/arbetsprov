@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import worktest.lovisa.fileservice.api.responses.Response;
+import worktest.lovisa.fileservice.api.responses.FilesListResponse;
+import worktest.lovisa.fileservice.api.responses.MessageResponse;
 import worktest.lovisa.fileservice.domain.PdfService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/files")
@@ -19,12 +22,19 @@ public class PdfController {
 
     @PostMapping()
     @ResponseBody
-     public ResponseEntity<Response> uploadPdf(@RequestPart MultipartFile file ) {
+     public ResponseEntity<MessageResponse> uploadPdf(@RequestPart MultipartFile file ) {
          pdfService.storePdf(file);
-         return ResponseEntity.ok().body(new Response(HttpStatus.OK.value(), "File uploaded successfully"));
+         return ResponseEntity.ok().body(new MessageResponse(HttpStatus.OK.value(), "File uploaded successfully"));
      }
 
     @GetMapping()
+    @ResponseBody
+    public ResponseEntity<FilesListResponse> showFiles() {
+        List<String> files = pdfService.listAvailableFiles();
+        return ResponseEntity.ok().body(new FilesListResponse(files));
+    }
+
+    @GetMapping("/serve")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@RequestParam String name) {
         Resource file = pdfService.loadAsResource(name);

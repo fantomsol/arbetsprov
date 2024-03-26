@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import worktest.lovisa.fileservice.BaseTest;
 import worktest.lovisa.fileservice.domain.exceptions.StorageException;
-
-
-import java.nio.file.FileAlreadyExistsException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -54,5 +52,19 @@ public class PdfServiceTests extends BaseTest {
         pdfService.storePdf(file);
         // then
         assertThrows(StorageException.class, () -> pdfService.storePdf(file));
+    }
+
+    @Test
+    public void shouldRetrieveNamesOfUploadedFiles() {
+        // given
+        final MultipartFile file = getFile(pdfExt, 0);
+        pdfService.storePdf(file);
+        // when
+        List<String> expected = List.of("file.pdf");
+        List<String> result = pdfService.listAvailableFiles();
+        // then
+        assert result.equals(expected);
+
+
     }
 }
