@@ -7,7 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import worktest.lovisa.fileservice.BaseTest;
-import worktest.lovisa.fileservice.api.responses.Response;
+import worktest.lovisa.fileservice.api.responses.FilesListResponse;
+import worktest.lovisa.fileservice.api.responses.MessageResponse;
+
+import java.util.List;
 
 public class PdfControllerTests extends BaseTest {
 
@@ -19,9 +22,9 @@ public class PdfControllerTests extends BaseTest {
         // given
         final MultipartFile pdfFile = getFile(pdfExt, 0);
         // when
-        ResponseEntity<Response> response = pdfController.uploadPdf(pdfFile);
+        ResponseEntity<MessageResponse> response = pdfController.uploadPdf(pdfFile);
         // then
-        Response expected = new Response(HttpStatus.OK.value(), "File uploaded successfully");
+        MessageResponse expected = new MessageResponse(HttpStatus.OK.value(), "File uploaded successfully");
         assert response.getBody().equals(expected);
     }
 
@@ -34,5 +37,17 @@ public class PdfControllerTests extends BaseTest {
         ResponseEntity<Resource> uploaded = pdfController.serveFile("file.pdf");
         // then
         assert uploaded.getBody().getFilename().equals("file.pdf");
+    }
+
+    @Test
+    public void shouldRetrieveAvailableFiles() {
+        // given
+        final MultipartFile pdfFile = getFile(pdfExt, 0);
+        // when
+        pdfController.uploadPdf(pdfFile);
+        ResponseEntity<FilesListResponse> response = pdfController.showFiles();
+        // then
+        List<String> expected = List.of("file.pdf");
+        assert response.getBody().files().equals(expected);
     }
 }
