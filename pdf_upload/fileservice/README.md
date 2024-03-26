@@ -13,4 +13,6 @@
 - Driven with Java 17, Spring boot, Gradle
 - Uploaded pdf files are by default stored in a local folder "uploads" created in the project directory. Name and location is changeable in resources/application.properties.
 - The controller is mapped to "/v1/api/files". A POST request to this endpoint with request parameter "file" as a form-data media type will upload your pdf file.
-- A GET request to the same endpoint with request parameter "name" as text input will retrieve the pdf file.
+- A GET request to the same endpoint will retrieve a list of uploaded files.
+- A GET request to "/v1/api/files/file" with request parameter "name" as text input will retrieve the pdf file with the given name.
+- Run the service with "sh ./gradlew bootRun" in terminal.

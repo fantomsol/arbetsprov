@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.*;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -37,6 +38,7 @@ public class PdfService {
     public void storePdf(MultipartFile file) {
         checkFile(file);
         try {
+            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
             String filename = Objects.requireNonNull(file.getOriginalFilename());
             Files.copy(file.getInputStream(), uploadPath.resolve(filename));
         } catch (IOException e) {
@@ -61,6 +63,19 @@ public class PdfService {
         }
         catch (MalformedURLException e) {
             throw new StorageException("Could not read file: " + filename, e);
+        }
+    }
+
+    public List<String> listAvailableFiles() {
+        try {
+            return Files.walk(uploadPath)
+                    .map(Path::toFile)
+                    .filter(File::isFile)
+                    .map(File::getName)
+                    .toList();
+        }
+        catch (IOException e) {
+            return List.of();
         }
     }
 }

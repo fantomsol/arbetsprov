@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
-import worktest.lovisa.fileservice.domain.exceptions.StorageException;
 
 import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
@@ -20,8 +19,8 @@ public class GlobalExceptionHandler {
     private String maxFileSize;
 
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<Response> handleStorageException(FileNotFoundException e) {
-        Response errorResponse = new Response(
+    public ResponseEntity<MessageResponse> handleStorageException(FileNotFoundException e) {
+        MessageResponse errorResponse = new MessageResponse(
                 HttpStatus.NOT_FOUND.value(),
                 "File could not be found."
         );
@@ -29,8 +28,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TypeMismatchException.class)
-    public ResponseEntity<Response> handleUnsupportedMediaType(TypeMismatchException e) {
-        Response errorResponse = new Response(
+    public ResponseEntity<MessageResponse> handleUnsupportedMediaType(TypeMismatchException e) {
+        MessageResponse errorResponse = new MessageResponse(
                 HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
                 "Unsupported media type, only PDF files are currently allowed."
         );
@@ -38,8 +37,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<Response> handleFileTooLargeException(MaxUploadSizeExceededException e) {
-        Response errorResponse = new Response(
+    public ResponseEntity<MessageResponse> handleFileTooLargeException(MaxUploadSizeExceededException e) {
+        MessageResponse errorResponse = new MessageResponse(
                 HttpStatus.PAYLOAD_TOO_LARGE.value(),
                 "File is too large, maximum size is " + maxFileSize
         );
@@ -47,14 +46,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(FileAlreadyExistsException.class)
-    public ResponseEntity<Response> handleFileDuplicateException(FileAlreadyExistsException e) {
-        Response errorResponse = new Response(HttpStatus.CONFLICT.value(), "File already exists");
+    public ResponseEntity<MessageResponse> handleFileDuplicateException(FileAlreadyExistsException e) {
+        MessageResponse errorResponse = new MessageResponse(HttpStatus.CONFLICT.value(), "File already exists");
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
-    public ResponseEntity<Response> handleMissingRequestPart(MissingServletRequestPartException e) {
-        Response errorResponse = new Response(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    public ResponseEntity<MessageResponse> handleMissingRequestPart(MissingServletRequestPartException e) {
+        MessageResponse errorResponse = new MessageResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
